@@ -10,49 +10,49 @@ import java.util.List;
  * 书籍对象
  */
 public class BookList implements Serializable {
-    private int id;
-    private boolean isOpenBook;
+    private int id = 0;
+    private boolean isOpenBook = false;
 
     /**
      *  0:免费 1:vip章节
      */
-    private int isvip;
+    private int isvip = 0;
 
     /**
      * 0:未购买 1:已经购买
      */
-    private int ismy;
-    private String bookname;
-    private String chaptername;
-    private int aid;
-    private int cid;
-    private int previous;
-    private int next;
+    private int ismy = 0;
+    private String bookname = "";
+    private String chaptername = "";
+    private int aid = 0;
+    private int cid = 0;
+    private int previous = 0;
+    private int next = 0;
 
     /**
      * 下一张vip
      */
-    private int nextvip;
+    private int nextvip = 0;
 
     /**
      * 下一张是否购买
      */
-    private int nextmy;
+    private int nextmy = 0;
     /**
      * 上一章是否购买
      */
-    private int premy;
+    private int premy = 0;
     /**
      * 上一章是否需要购买
      */
-    private int previp;
+    private int previp = 0;
 
-    private String bookpath;
-    private long begin;
-    private String charset;
-    private String content;
-    private List<ViewCount> viewCountList;     //段落想法数量
-    private List<ChapterInfo> chapterInfoList;  //当前章节前后两章
+    private String bookpath = "";
+    private long begin = 0;
+    private String charset = "";
+    private String content = "";
+    private List<ViewCount> viewCountList = null;     //段落想法数量
+    private List<ChapterInfo> chapterInfoList = null;  //当前章节前后两章
 
     public int getPremy() {
         return premy;

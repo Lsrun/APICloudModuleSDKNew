@@ -181,7 +181,7 @@ public class PageFactory {
 
     private List<ViewCount> mViewCountList;
 
-    private BookList bookList;
+    private BookList bookList = null;
 
     private BookList bookListCache;
 
@@ -1206,6 +1206,7 @@ public class PageFactory {
      * 向前翻页
      */
     public void prePage() {
+        // MessageBox.show("booklist测试-3");
         /// 是第一页
         if (currentPage.getBegin() <= 0 && currentPage.getPrevious() <= 0) {
             //Log.e(TAG, "当前是第一页");
@@ -1219,26 +1220,20 @@ public class PageFactory {
         }
 
         /// 开始的长度 小于或者 等于  1
-
+        // MessageBox.show("booklist测试-2");
         if (currentPage.getBegin() <= 1) {
 
             ReadActivity.log("是否判断购买vip-----");
 
             int previous = currentPage.getPrevious();
-
             int indexMy = bookList.getPremy();
             int vip = bookList.getPrevip();
-
             // 获取上一章节的cid
             int nextCid = bookList.getPrevious();
             int aid = ReadActivity.mAid;
             int uid = ReadActivity.mUid;
 
             boolean hhh = DbUtil.getInstence(mContext).isHas(nextCid, aid, uid);
-
-            //Lsrun 判断APIcloud是否已经下载 2018410
-            ReadActivity lsrun_readActivity = new ReadActivity();
-            int lsrun_ismy = lsrun_readActivity.isDownloadByApicloud(uid,aid,nextCid);
 
             if (hhh) {
                 // 该章节在本地数据库中已购买
@@ -1437,7 +1432,6 @@ public class PageFactory {
 
         if (currentPage.getBegin() <= 1) {
             ///  需要切换章节
-
             int previous = currentPage.getPrevious();
             if (previous > 0) {
                 int isCache = mBookUtil.isCache(currentPage.getAid(), currentPage.getPrevious());

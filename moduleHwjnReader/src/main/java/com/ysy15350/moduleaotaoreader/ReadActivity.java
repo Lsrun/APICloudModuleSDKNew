@@ -98,6 +98,7 @@ import base.model.directory.DirectoryModel;
 import base.mvp.MVPBaseActivity;
 import common.CommFun;
 import common.CommFunAndroid;
+import common.cache.ACache;
 import common.file.FileUtils;
 import common.message.MessageBox;
 import common.string.JsonConvertor;
@@ -293,6 +294,7 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
      * 是否启用调试
      */
     public static boolean isDebug = true;
+    public static boolean isTest = true;
 
     public static Button buttonBuy;
 
@@ -326,7 +328,7 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
 
         String sign;
         String path;
-        if(!isDebug) {
+        if(!isTest) {
             url = intent.getStringExtra("url");
             uid = intent.getStringExtra("uid");
             aid = intent.getStringExtra("aid");
@@ -1241,7 +1243,7 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
 
             @Override
             public Boolean prePage() {
-
+                // MessageBox.show("booklist测试-6");
                 DbUtil.getInstence(ReadActivity.this).addCount(String.valueOf(mAid), String.valueOf(bookList.getCid()));
 
                 if (isShow || isSpeaking) {
@@ -1255,11 +1257,11 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
 
                 // 向前滑动
                 if (indexCode == 2) {
-
+                    // MessageBox.show("booklist测试-7");
                     bookpage.setPageMode(config.getPageMode());
                     indexCode = 0;
                 }
-
+                // MessageBox.show("booklist测试-4");
                 pageFactory.prePage();
 
                 if (pageFactory.isfirstPage()) {
@@ -4413,6 +4415,7 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         if (keyCode == KeyEvent.KEYCODE_VOLUME_UP && event.getAction() == KeyEvent.ACTION_DOWN) {
+            // MessageBox.show("booklist测试-5");
             pageFactory.prePage();
             return true;
         }
@@ -4541,12 +4544,12 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
         return luckymoney;
     }
 
-//    public static BookList getBookList(){
-////        String bookListJson = BaseData.getCache("bookListJson" + mAid + mCid);   ///  读取章节本地缓存
-////        if (!CommFun.isNullOrEmpty(bookListJson)) {
-////            BookList model = JsonConvertor.fromJson(bookListJson, BookList.class);
-////            return model;
-////        }
-////        return null;
-////    }
+    public static BookList getBookList(){
+        String bookListJson = BaseData.getCache("bookListJson" + mAid + mCid);   ///  读取章节本地缓存
+        if (!CommFun.isNullOrEmpty(bookListJson)) {
+            BookList model = JsonConvertor.fromJson(bookListJson, BookList.class);
+            return model;
+        }
+        return null;
+    }
 }
