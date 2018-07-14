@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
@@ -15,7 +16,9 @@ import android.widget.Scroller;
 import android.widget.TextView;
 
 import com.ysy15350.moduleaotaoreader.Config;
+import com.ysy15350.moduleaotaoreader.R;
 import com.ysy15350.moduleaotaoreader.ReadActivity;
+import com.ysy15350.moduleaotaoreader.db.BookList;
 import com.ysy15350.moduleaotaoreader.model.FlagInfo;
 import com.ysy15350.moduleaotaoreader.model.ParagraphInfo;
 import com.ysy15350.moduleaotaoreader.util.PageFactory;
@@ -27,6 +30,10 @@ import com.ysy15350.moduleaotaoreader.view.animation.SlideAnimation;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import common.CommFun;
+import common.cache.DataCleanManager;
+import common.message.MessageBox;
 
 import static android.content.Context.VIBRATOR_SERVICE;
 
@@ -253,201 +260,213 @@ public class PageWidget extends TextView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        super.onTouchEvent(event);
-        if (PageFactory.getStatus() == PageFactory.Status.OPENING) {
-            return true;
-        }
+        try {
+            super.onTouchEvent(event);
+            if (PageFactory.getStatus() == PageFactory.Status.OPENING) {
+                return true;
+            }
 
-        int x = (int) event.getX();
-        int y = (int) event.getY();
+            int x = (int) event.getX();
+            int y = (int) event.getY();
 
-        long eventTime = System.currentTimeMillis();
+            long eventTime = System.currentTimeMillis();
 
-        mAnimationProvider.setTouchPoint(x, y);
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            downX = (int) event.getX();
-            downY = (int) event.getY();
-            moveX = 0;
-            moveY = 0;
-            isMove = false;
+            mAnimationProvider.setTouchPoint(x, y);
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                downX = (int) event.getX();
+                downY = (int) event.getY();
+                moveX = 0;
+                moveY = 0;
+                isMove = false;
 //            cancelPage = false;
-            noNext = false;
-            isNext = false;
-            isRuning = false;
+                noNext = false;
+                isNext = false;
+                isRuning = false;
 
-            isLongPress = false;
-            isVibrator = false;
-            isLongPressTouchActionUp = false;
-
-
-            mAnimationProvider.setStartPoint(downX, downY);
-            abortAnimation();
-
-        } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-
-            // 判断是否触发长按事件
-            if (event.getEventTime() - event.getDownTime() >= TRIGGER_LONGPRESS_TIME_THRESHOLD
-                    && Math.abs(event.getX() - downX) < TRIGGER_LONGPRESS_DISTANCE_THRESHOLD
-                    && Math.abs(event.getY() - downY) < TRIGGER_LONGPRESS_DISTANCE_THRESHOLD) {
-
-                isLongPress = true;
+                isLongPress = false;
+                isVibrator = false;
                 isLongPressTouchActionUp = false;
-                Log.d(TAG, "onTouchEvent: 长按事件" + downX + "," + downY);
-
-                // 每次触发长按时，震动提示一次
-                if (!isVibrator) {
-                    mVibrator.vibrate(30);
-                    isVibrator = true;
-                }
-            }
 
 
-            final int slop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
-            //判断是否移动了
-            if (!isMove) {
-                isMove = Math.abs(downX - x) > slop || Math.abs(downY - y) > slop;
-            }
+                mAnimationProvider.setStartPoint(downX, downY);
+                abortAnimation();
 
-            if (isMove) {
-                isMove = true;
-                if (moveX == 0 && moveY == 0) {
-                    /// 判断翻得是上一页还是下一页
-                    if (x - downX > 0) {
-                        isNext = false;
-                    } else {
-                        isNext = true;
+            } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+
+                // 判断是否触发长按事件
+                if (event.getEventTime() - event.getDownTime() >= TRIGGER_LONGPRESS_TIME_THRESHOLD
+                        && Math.abs(event.getX() - downX) < TRIGGER_LONGPRESS_DISTANCE_THRESHOLD
+                        && Math.abs(event.getY() - downY) < TRIGGER_LONGPRESS_DISTANCE_THRESHOLD) {
+
+                    isLongPress = true;
+                    isLongPressTouchActionUp = false;
+                    Log.d(TAG, "onTouchEvent: 长按事件" + downX + "," + downY);
+
+                    // 每次触发长按时，震动提示一次
+                    if (!isVibrator) {
+                        mVibrator.vibrate(30);
+                        isVibrator = true;
                     }
-                    cancelPage = false;
-                    if (isNext) {
-                        Boolean isNext = mTouchListener.nextPage();
+                }
+
+
+                final int slop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+                //判断是否移动了
+                if (!isMove) {
+                    isMove = Math.abs(downX - x) > slop || Math.abs(downY - y) > slop;
+                }
+
+                if (isMove) {
+                    isMove = true;
+                    if (moveX == 0 && moveY == 0) {
+                        /// 判断翻得是上一页还是下一页
+                        if (x - downX > 0) {
+                            isNext = false;
+                        } else {
+                            isNext = true;
+                        }
+                        cancelPage = false;
+                        if (isNext) {
+                            Boolean isNext = mTouchListener.nextPage();
 //                        calcCornerXY(downX,mScreenHeight);
-                        mAnimationProvider.setDirection(AnimationProvider.Direction.next);
+                            mAnimationProvider.setDirection(AnimationProvider.Direction.next);
 
-                        if (!isNext) {
-                            noNext = true;
-                            return true;
-                        }
-                    } else {
-                        Boolean isPre = mTouchListener.prePage();
-
-                        mAnimationProvider.setDirection(AnimationProvider.Direction.pre);
-
-                        if (!isPre) {
-                            noNext = true;
-                            return true;
-                        }
-                    }
-
-                } else {
-                    //判断是否取消翻页
-                    if (isNext) {
-                        if (x - moveX > 0) {
-                            cancelPage = true;
-                            mAnimationProvider.setCancel(true);
+                            if (!isNext) {
+                                noNext = true;
+                                return true;
+                            }
                         } else {
-                            cancelPage = false;
-                            mAnimationProvider.setCancel(false);
-                        }
-                    } else {
-                        if (x - moveX < 0) {
-                            mAnimationProvider.setCancel(true);
-                            cancelPage = true;
-                        } else {
-                            mAnimationProvider.setCancel(false);
-                            cancelPage = false;
-                        }
-                    }
+                            Boolean isPre = mTouchListener.prePage();
 
-                }
+                            mAnimationProvider.setDirection(AnimationProvider.Direction.pre);
 
-                moveX = x;
-                moveY = y;
-                isRuning = true;
-                this.postInvalidate();
-            }
-
-        } else if (event.getAction() == MotionEvent.ACTION_UP) {
-
-            if (!isMove) {
-                cancelPage = false;
-
-                List<FlagInfo> flagInfoList = isClickFlag(downX, downY);
-
-                ReadActivity.log( "附近吐槽长度----" + flagInfoList.size());
-
-                if (flagInfoList.size() != 0) {
-
-                    if (mTouchListener != null) {
-                        mTouchListener.flagClick(flagInfoList);
-                    }
-
-                    return true;
-
-                } else {
-
-                    if (isLongPress) {
-
-                        ParagraphInfo paragraphInfo = isLongClickParagraph(downX, downY);
-
-                        if (paragraphInfo != null) {
-                            if (mTouchListener != null) {
-                                mTouchListener.paragraphLongClick(paragraphInfo);
+                            if (!isPre) {
+                                noNext = true;
+                                return true;
                             }
                         }
 
-                        isLongPress = false;
-
-                        return true;
-                    } else if (downX > mScreenWidth / 5 && downX < mScreenWidth * 4 / 5 && downY > mScreenHeight / 3 && downY < mScreenHeight * 2 / 3) {
-
-                        ///  是否点击了中间
-                        if (mTouchListener != null) {
-                            mTouchListener.center();
-                        }
-
-                        return true;
-
-                    } else if (downX > mScreenWidth / 5 && downX < mScreenWidth * 4 / 5 && downY > mScreenHeight * 4 / 5 && downY < mScreenHeight) {
-                        // 是否点击了底部
-                        if (mTouchListener != null) {
-                            mTouchListener.bottom();
-                        }
-                        return true;
-                    } else if (x < mScreenWidth / 3) {
-                        isNext = false;
                     } else {
-                        isNext = true;
+                        //判断是否取消翻页
+                        if (isNext) {
+                            if (x - moveX > 0) {
+                                cancelPage = true;
+                                mAnimationProvider.setCancel(true);
+                            } else {
+                                cancelPage = false;
+                                mAnimationProvider.setCancel(false);
+                            }
+                        } else {
+                            if (x - moveX < 0) {
+                                mAnimationProvider.setCancel(true);
+                                cancelPage = true;
+                            } else {
+                                mAnimationProvider.setCancel(false);
+                                cancelPage = false;
+                            }
+                        }
+
                     }
 
-                    if (isNext) {
-                        Boolean isNext = mTouchListener.nextPage();
-                        mAnimationProvider.setDirection(AnimationProvider.Direction.next);
-                        if (!isNext) {
-                            return true;
+                    moveX = x;
+                    moveY = y;
+                    isRuning = true;
+                    this.postInvalidate();
+                }
+
+            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+
+                if (!isMove) {
+                    cancelPage = false;
+
+                    List<FlagInfo> flagInfoList = isClickFlag(downX, downY);
+
+                    ReadActivity.log("附近吐槽长度----" + flagInfoList.size());
+
+                    if (flagInfoList.size() != 0) {
+
+                        if (mTouchListener != null) {
+                            mTouchListener.flagClick(flagInfoList);
                         }
 
+                        return true;
+
                     } else {
-                        Boolean isPre = mTouchListener.prePage();
-                        mAnimationProvider.setDirection(AnimationProvider.Direction.pre);
-                        if (!isPre) {
+
+                        if (isLongPress) {
+
+                            ParagraphInfo paragraphInfo = isLongClickParagraph(downX, downY);
+
+                            if (paragraphInfo != null) {
+                                if (mTouchListener != null) {
+                                    mTouchListener.paragraphLongClick(paragraphInfo);
+                                }
+                            }
+
+                            isLongPress = false;
+
                             return true;
+                        } else if (downX > mScreenWidth / 5 && downX < mScreenWidth * 4 / 5 && downY > mScreenHeight / 3 && downY < mScreenHeight * 2 / 3) {
+
+                            ///  是否点击了中间
+                            if (mTouchListener != null) {
+                                mTouchListener.center();
+                            }
+
+                            return true;
+
+                        } else if (downX > mScreenWidth / 5 && downX < mScreenWidth * 4 / 5 && downY > mScreenHeight * 4 / 5 && downY < mScreenHeight) {
+                            // 是否点击了底部
+                            if (mTouchListener != null) {
+                                mTouchListener.bottom();
+                            }
+                            return true;
+                        } else if (x < mScreenWidth / 3) {
+                            isNext = false;
+                        } else {
+                            isNext = true;
+                        }
+
+                        if (isNext) {
+                            Boolean isNext = mTouchListener.nextPage();
+                            mAnimationProvider.setDirection(AnimationProvider.Direction.next);
+                            if (!isNext) {
+                                return true;
+                            }
+
+                        } else {
+                            Boolean isPre = mTouchListener.prePage();
+                            mAnimationProvider.setDirection(AnimationProvider.Direction.pre);
+                            if (!isPre) {
+                                return true;
+                            }
                         }
                     }
                 }
-            }
 
-            if (cancelPage && mTouchListener != null) {
-                mTouchListener.cancel();
-            }
+                if (cancelPage && mTouchListener != null) {
+                    mTouchListener.cancel();
+                }
 
-            if (!noNext) {
-                isRuning = true;
-                mAnimationProvider.startAnimation(mScroller);
-                this.postInvalidate();
+                if (!noNext) {
+                    isRuning = true;
+                    mAnimationProvider.startAnimation(mScroller);
+                    this.postInvalidate();
+                }
             }
+            return true;
+        }catch(Exception e){
+
+            if(isNext){
+                MessageBox.show("数据错误,无法翻页,请点击下一章");
+            }else{
+                MessageBox.show("数据错误,无法翻页,请点击上一章");
+            }
+//            ReadActivity readActivity = new ReadActivity();
+//            readActivity.preChapter();
+
+            return true;
         }
-
-        return true;
     }
 
     @Override

@@ -22,6 +22,8 @@ import android.widget.TextView;
 
 import com.ysy15350.moduleaotaoreader.R;
 
+import common.message.MessageBox;
+
 
 /**
  *
@@ -372,40 +374,45 @@ public class XScrollView extends ScrollView implements OnScrollListener {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        if (mLastY == -1) {
-            mLastY = ev.getRawY();
-        }
-
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
+        try {
+            if (mLastY == -1) {
                 mLastY = ev.getRawY();
-                break;
+            }
 
-            case MotionEvent.ACTION_MOVE:
-                final float deltaY = ev.getRawY() - mLastY;
-                mLastY = ev.getRawY();
+            switch (ev.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    mLastY = ev.getRawY();
+                    break;
 
-                if (isTop() && (mHeader.getVisibleHeight() > 0 || deltaY > 0)) {
-                    // the first item is showing, header has shown or pull down.
-                    updateHeaderHeight(deltaY / OFFSET_RADIO);
-                    invokeOnScrolling();
+                case MotionEvent.ACTION_MOVE:
+                    final float deltaY = ev.getRawY() - mLastY;
+                    mLastY = ev.getRawY();
 
-                } else if (isBottom() && (mFooterView.getBottomMargin() > 0 || deltaY < 0)) {
-                    // last item, already pulled up or want to pull up.
-                    updateFooterHeight(-deltaY / OFFSET_RADIO);
+                    if (isTop() && (mHeader.getVisibleHeight() > 0 || deltaY > 0)) {
+                        // the first item is showing, header has shown or pull down.
+                        updateHeaderHeight(deltaY / OFFSET_RADIO);
+                        invokeOnScrolling();
 
-                }
-                break;
+                    } else if (isBottom() && (mFooterView.getBottomMargin() > 0 || deltaY < 0)) {
+                        // last item, already pulled up or want to pull up.
+                        updateFooterHeight(-deltaY / OFFSET_RADIO);
 
-            default:
-                // reset
-                mLastY = -1;
+                    }
+                    break;
 
-                resetHeaderOrBottom();
-                break;
+                default:
+                    // reset
+                    mLastY = -1;
+
+                    resetHeaderOrBottom();
+                    break;
+            }
+
+            return super.onTouchEvent(ev);
+        }catch (Exception e){
+            MessageBox.show("XScrollView:"+e.toString());
+            return false;
         }
-
-        return super.onTouchEvent(ev);
     }
 
     private void resetHeaderOrBottom() {

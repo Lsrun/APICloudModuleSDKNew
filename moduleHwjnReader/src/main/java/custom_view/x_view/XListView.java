@@ -22,6 +22,8 @@ import android.widget.TextView;
 
 import com.ysy15350.moduleaotaoreader.R;
 
+import common.message.MessageBox;
+
 
 /**
  * XListView, it's based on
@@ -374,54 +376,59 @@ public class XListView extends ListView implements OnScrollListener {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        if (mLastY == -1) {
-            mLastY = ev.getRawY();
-        }
-
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
+        try {
+            if (mLastY == -1) {
                 mLastY = ev.getRawY();
-                break;
+            }
 
-            case MotionEvent.ACTION_MOVE:
-                final float deltaY = ev.getRawY() - mLastY;
-                mLastY = ev.getRawY();
+            switch (ev.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    mLastY = ev.getRawY();
+                    break;
 
-                if (getFirstVisiblePosition() == 0 && (mHeader.getVisibleHeight() > 0 || deltaY > 0)) {
-                    // the first item is showing, header has shown or pull down.
-                    updateHeaderHeight(deltaY / OFFSET_RADIO);
-                    invokeOnScrolling();
+                case MotionEvent.ACTION_MOVE:
+                    final float deltaY = ev.getRawY() - mLastY;
+                    mLastY = ev.getRawY();
 
-                } else if (getLastVisiblePosition() == mTotalItemCount - 1
-                        && (mFooterView.getBottomMargin() > 0 || deltaY < 0)) {
-                    // last item, already pulled up or want to pull up.
-                    updateFooterHeight(-deltaY / OFFSET_RADIO);
-                }
-                break;
+                    if (getFirstVisiblePosition() == 0 && (mHeader.getVisibleHeight() > 0 || deltaY > 0)) {
+                        // the first item is showing, header has shown or pull down.
+                        updateHeaderHeight(deltaY / OFFSET_RADIO);
+                        invokeOnScrolling();
 
-            default:
-                // reset
-                mLastY = -1;
-                if (getFirstVisiblePosition() == 0) {
-                    // invoke refresh
-                    if (mEnablePullRefresh && mHeader.getVisibleHeight() > mHeaderHeight) {
-                        mPullRefreshing = true;
-                        mHeader.setState(XHeaderView.STATE_REFRESHING);
-                        refresh();
+                    } else if (getLastVisiblePosition() == mTotalItemCount - 1
+                            && (mFooterView.getBottomMargin() > 0 || deltaY < 0)) {
+                        // last item, already pulled up or want to pull up.
+                        updateFooterHeight(-deltaY / OFFSET_RADIO);
                     }
+                    break;
 
-                    resetHeaderHeight();
+                default:
+                    // reset
+                    mLastY = -1;
+                    if (getFirstVisiblePosition() == 0) {
+                        // invoke refresh
+                        if (mEnablePullRefresh && mHeader.getVisibleHeight() > mHeaderHeight) {
+                            mPullRefreshing = true;
+                            mHeader.setState(XHeaderView.STATE_REFRESHING);
+                            refresh();
+                        }
 
-                } else if (getLastVisiblePosition() == mTotalItemCount - 1) {
-                    // invoke load more.
-                    if (mEnablePullLoad && mFooterView.getBottomMargin() > PULL_LOAD_MORE_DELTA) {
-                        startLoadMore();
+                        resetHeaderHeight();
+
+                    } else if (getLastVisiblePosition() == mTotalItemCount - 1) {
+                        // invoke load more.
+                        if (mEnablePullLoad && mFooterView.getBottomMargin() > PULL_LOAD_MORE_DELTA) {
+                            startLoadMore();
+                        }
+                        resetFooterHeight();
                     }
-                    resetFooterHeight();
-                }
-                break;
+                    break;
+            }
+            return super.onTouchEvent(ev);
+        }catch (Exception e){
+            MessageBox.show("XListView:"+e.toString());
+            return false;
         }
-        return super.onTouchEvent(ev);
     }
 
     @Override

@@ -248,7 +248,7 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
     /**
      * 从哪儿调用   1 为正常阅读  2 为从主目录跳转
      */
-    public static int type = 1;
+    public static int type = 2;
 
     private int currentCid = 0;
 
@@ -293,8 +293,8 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
     /**
      * 是否启用调试
      */
-    public static boolean isDebug = true;
-    public static boolean isTest = true;
+    public static boolean isDebug = false;
+    public static boolean isTest = false;
 
     public static Button buttonBuy;
 
@@ -1051,7 +1051,7 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
     /**
      * popwindow是否显示
      */
-    private Boolean isShow = false;
+    private Boolean isShow = true;
 
     /**
      * 是否正在阅读
@@ -1859,6 +1859,7 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
                     MessageBox.hideWaitDialog();
 
                     ChapterInfo chap = getChapterInfo((String) msg.obj);
+//                    MessageBox.show((String)msg.obj);
                     if (chap != null) {
 
                         int aid = chap.getAid();
@@ -2355,16 +2356,6 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
             return;
         }
         if (vip == 1) {
-            //如果是vip章节判断是否为自动订阅
-            boolean isDing =  Config.getIsDing(this,mUid,mAid);
-            if(isDing && ismy == 0){
-                /// 刷新目录信息
-                if (indexFragment != null) {
-                    /// 重新获取一次目录
-//                    indexFragment.chapterlistAutoBuy(mAid);
-
-                }
-            }
             if (ismy == 0) {
                 return;
             }
@@ -2967,7 +2958,7 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
      * @param isOpen 是否打开   true 打开
      */
     private void chapter(int cid, final boolean isOpen) {
-
+//        MessageBox.show("网络打开章节");
 //        checkNetWork();
 //        if(network_type == -1){
 //            return;
@@ -3008,7 +2999,7 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
             public void onResponse(Call call, Response response) throws IOException {
                 final String str = response.body().string();
                 ReadActivity.this.isOpenBook = isOpen;
-
+//                MessageBox.show("缓存章节==="+str);
                 log("缓存章节==="+str);
 
                 Message message = mHandler.obtainMessage();
@@ -3203,8 +3194,29 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
     public void preChapter() {
         mOldProgress = 0;
         try {
+//            MessageBox.show("preChapter"+"-----"+mCid+"***"+mAid+"***"+mUid);
+//            if(CommFun.isNullOrEmpty(mCurrentChapterInfo)){
+//                String chapterJson = BaseData.getCache("chapterJson" + mAid + mCid);
+//                if (CommFun.isNullOrEmpty(chapterJson)) {
+//
+//                    /// 缓存为空
+//                    String fileName = String.format(Locale.CHINA, "%d_%d_%d.txt", mUid, mAid, mCid);
+//                    String fullPath = savePath + "/" + fileName;
+//                    chapterJson = FileUtils.readFile(fullPath);
+//
+//                    log("执行读取文件------");
+//
+//                }
+//                if (!CommFun.isNullOrEmpty(chapterJson)) {
+//                    ///  数据存在
+//                    mCurrentChapterInfo = getChapterInfo(chapterJson);
+//                    MessageBox.showWaitDialog(this,"");
+//                    chapter(mCurrentChapterInfo.getPrevious(),true);
+//                    return;
+//                }
+//            }
             previousCid = mCurrentChapterInfo.getPrevious();
-
+//            MessageBox.show("previousCid:"+previousCid);
             if (previousCid == 0) {
                 MessageBox.show("已到达第一章");
 
@@ -3221,18 +3233,14 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
                 if (isDing) {
 
                     getChapter(previousCid, true);
-                    if(indexMy == 1) {
-                        DbUtil.getInstence(this).save(previousCid, mAid, mUid);
-                    }
+
+                    DbUtil.getInstence(this).save(previousCid, mAid, mUid);
 
                 } else {
                     if (bbb) {
                         getChapter(previousCid, true);
                     } else {
                         if (indexVip == 1) {
-
-                            //Lsrun 判断是否缓存章节内容
-                            int lsrun_my = isDownloadByApicloud(mUid,mAid,previousCid);
 
                             if (indexMy == 1) {
                                 getChapter(previousCid, true);
@@ -3247,6 +3255,7 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
             }
 
         } catch (Exception e) {
+            MessageBox.show(e.toString());
             e.printStackTrace();
         }
     }
@@ -4552,4 +4561,5 @@ public class ReadActivity extends MVPBaseActivity<ReadViewInterface, ReadPresent
         }
         return null;
     }
+
 }
