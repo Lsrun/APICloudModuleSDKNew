@@ -8,7 +8,6 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
@@ -16,9 +15,7 @@ import android.widget.Scroller;
 import android.widget.TextView;
 
 import com.ysy15350.moduleaotaoreader.Config;
-import com.ysy15350.moduleaotaoreader.R;
 import com.ysy15350.moduleaotaoreader.ReadActivity;
-import com.ysy15350.moduleaotaoreader.db.BookList;
 import com.ysy15350.moduleaotaoreader.model.FlagInfo;
 import com.ysy15350.moduleaotaoreader.model.ParagraphInfo;
 import com.ysy15350.moduleaotaoreader.util.PageFactory;

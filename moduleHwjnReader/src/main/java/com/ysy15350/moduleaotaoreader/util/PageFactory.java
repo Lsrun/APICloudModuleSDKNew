@@ -1329,10 +1329,6 @@ public class PageFactory {
 
             ReadActivity.log("======" + hhh);
 
-            //Lsrun 判断APIcloud是否已经下载 2018410
-            ReadActivity lsrun_readActivity = new ReadActivity();
-            int lsrun_ismy = lsrun_readActivity.isDownloadByApicloud(uid,aid,nextCid);
-
             if (hhh ) {
                 // 下一章节已在本地存在，直接阅读
             } else {

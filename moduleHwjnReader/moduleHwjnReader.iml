@@ -90,25 +90,19 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="Gradle: __local_jars__:E.\AndroidStudioWorkSpace\APICloudModuleSDKNew\app\libs\okio-1.6.0.jar:unspecified@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:support-fragment-25.3.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.android.support:support-annotations:25.3.1@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:support-vector-drawable-25.0.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.android.support:support-core-ui-25.0.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.android.support:support-fragment-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:support-v4-25.3.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.android.support:support-v4-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:support-core-ui-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:support-media-compat-25.3.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.android.support:support-media-compat-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:recyclerview-v7-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: __local_jars__:E.\AndroidStudioWorkSpace\APICloudModuleSDKNew\app\libs\gson-2.2.4.jar:unspecified@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:appcompat-v7-25.0.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.android.support:support-compat-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:animated-vector-drawable-25.0.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.android.support:support-annotations:25.0.1@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:design-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: __local_jars__:E.\AndroidStudioWorkSpace\APICloudModuleSDKNew\app\libs\apiEngine v1.1.0.jar:unspecified@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:support-compat-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:support-core-utils-25.3.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.android.support:support-core-utils-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: __local_jars__:E.\AndroidStudioWorkSpace\APICloudModuleSDKNew\moduleHwjnReader\libs\universal-image-loader-1.9.3.jar:unspecified@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: __local_jars__:E.\AndroidStudioWorkSpace\APICloudModuleSDKNew\app\libs\okhttp-3.2.0.jar:unspecified@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:transition-25.0.1" level="project" />
