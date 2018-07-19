@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Vibrator;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -35,7 +36,8 @@ import common.message.MessageBox;
 import static android.content.Context.VIBRATOR_SERVICE;
 
 
-public class PageWidget extends TextView {
+
+public class PageWidget extends AppCompatTextView {
 
 
     private final static String TAG = "BookPageWidget";
