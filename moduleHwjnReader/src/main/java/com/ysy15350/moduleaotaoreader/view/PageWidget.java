@@ -37,7 +37,7 @@ import static android.content.Context.VIBRATOR_SERVICE;
 
 
 
-public class PageWidget extends AppCompatTextView {
+public class PageWidget extends TextView {
 
 
     private final static String TAG = "BookPageWidget";
